@@ -3,9 +3,11 @@ package gosocketio
 import (
 	"encoding/json"
 	"errors"
-	"github.com/graarh/golang-socketio/protocol"
+	"fmt"
 	"log"
 	"time"
+
+	"github.com/graarh/golang-socketio/protocol"
 )
 
 var (
@@ -16,7 +18,7 @@ var (
 /**
 Send message packet to socket
 */
-func send(msg *protocol.Message, c *Channel, args interface{}) error {
+func send(msg *protocol.Message, c *Channel, args ...interface{}) error {
 	//preventing json/encoding "index out of range" panic
 	defer func() {
 		if r := recover(); r != nil {
@@ -31,9 +33,13 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 		}
 
 		msg.Args = string(json)
+
 	}
 
 	command, err := protocol.Encode(msg)
+
+	fmt.Println(command)
+
 	if err != nil {
 		return err
 	}
@@ -50,13 +56,13 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 /**
 Create packet based on given data and send it
 */
-func (c *Channel) Emit(method string, args interface{}) error {
+func (c *Channel) Emit(method string, args ...interface{}) error {
 	msg := &protocol.Message{
 		Type:   protocol.MessageTypeEmit,
 		Method: method,
 	}
 
-	return send(msg, c, args)
+	return send(msg, c, args...)
 }
 
 /**
