@@ -15,8 +15,8 @@ const (
 	ackMessage    = "43"
 
 	CloseMessage = "1"
-	PingMessage = "2"
-	PongMessage = "3"
+	PingMessage  = "2"
+	PongMessage  = "3"
 )
 
 var (
@@ -57,6 +57,10 @@ func Encode(msg *Message) (string, error) {
 
 	if msg.Type == MessageTypeAckRequest || msg.Type == MessageTypeAckResponse {
 		result += strconv.Itoa(msg.AckId)
+	}
+
+	if strings.HasPrefix(msg.Args, "[") && strings.HasSuffix(msg.Args, "]") {
+		msg.Args = msg.Args[1 : len(msg.Args)-1]
 	}
 
 	if msg.Type == MessageTypeOpen || msg.Type == MessageTypeClose {
