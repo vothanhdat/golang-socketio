@@ -180,6 +180,7 @@ func Decode(data string) (*Message, error) {
 	msg.Source = data
 
 	msg.Type, err = getMessageType(data)
+
 	if err != nil {
 		return nil, err
 	}
@@ -210,6 +211,11 @@ func Decode(data string) (*Message, error) {
 	}
 
 	msg.Method, msg.Args, err = getMethod(rest)
+
+	msg.Args = "[" + msg.Args + "]"
+
+	// fmt.Println("decode ", msg.Method, msg.Args, err)
+
 	if err != nil {
 		return nil, err
 	}
