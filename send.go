@@ -3,7 +3,6 @@ package gosocketio
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -48,7 +47,7 @@ func send(msg *protocol.Message, c *Channel, args ...interface{}) error {
 		return ErrorSocketOverflood
 	}
 
-	fmt.Println("----- >>>", command)
+	// fmt.Println("----- >>>", command)
 
 	c.out <- command
 

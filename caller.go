@@ -2,12 +2,13 @@ package gosocketio
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 )
 
 type caller struct {
 	Func        reflect.Value
-	Args        reflect.Type
+	Args        []reflect.Type
 	ArgsPresent bool
 	Out         bool
 }
@@ -38,10 +39,13 @@ func newCaller(f interface{}) (*caller, error) {
 		Out:  fType.NumOut() == 1,
 	}
 	if fType.NumIn() == 1 {
-		curCaller.Args = nil
+		curCaller.Args = []reflect.Type{}
 		curCaller.ArgsPresent = false
-	} else if fType.NumIn() == 2 {
-		curCaller.Args = fType.In(1)
+	} else if fType.NumIn() >= 2 {
+		curCaller.Args = make([]reflect.Type, fType.NumIn()-1)
+		for i := 1; i < fType.NumIn(); i++ {
+			curCaller.Args[i-1] = fType.In(i)
+		}
 		curCaller.ArgsPresent = true
 	} else {
 		return nil, ErrorCallerNot2Args
@@ -53,23 +57,38 @@ func newCaller(f interface{}) (*caller, error) {
 /**
 returns function parameter as it is present in it using reflection
 */
-func (c *caller) getArgs() interface{} {
-	return reflect.New(c.Args).Interface()
+func (c *caller) getArgs() []interface{} {
+	r := make([]interface{}, len(c.Args))
+	for index := range c.Args {
+		r[index] = reflect.New(c.Args[index]).Interface()
+	}
+	return r
 }
 
 /**
 calls function with given arguments from its representation using reflection
 */
-func (c *caller) callFunc(h *Channel, args interface{}) []reflect.Value {
+func (c *caller) callFunc(h *Channel, args ...interface{}) []reflect.Value {
 	//nil is untyped, so use the default empty value of correct type
 	if args == nil {
 		args = c.getArgs()
 	}
 
-	a := []reflect.Value{reflect.ValueOf(h), reflect.ValueOf(args).Elem()}
+	a := make([]reflect.Value, len(args)+1)
+	a[0] = reflect.ValueOf(h)
+	for i := range args {
+		fmt.Println(args[i])
+		if args[i] != nil {
+			a[i+1] = reflect.ValueOf(args[i]).Elem()
+		} else {
+			// a[i+1] =
+		}
+	}
+	// a := []reflect.Value{reflect.ValueOf(h), reflect.ValueOf(args).Elem()}
 	if !c.ArgsPresent {
 		a = a[0:1]
 	}
+	fmt.Println("Call Argument size", a, c.Func)
 
 	return c.Func.Call(a)
 }
