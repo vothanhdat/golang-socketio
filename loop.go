@@ -3,6 +3,7 @@ package gosocketio
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -115,6 +116,7 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 func inLoop(c *Channel, m *methods) error {
 	for {
 		pkg, err := c.conn.GetMessage()
+		fmt.Println("<<<-----", pkg)
 		if err != nil {
 			return closeChannel(c, m, err)
 		}

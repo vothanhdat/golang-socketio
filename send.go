@@ -3,6 +3,7 @@ package gosocketio
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -46,6 +47,8 @@ func send(msg *protocol.Message, c *Channel, args ...interface{}) error {
 	if len(c.out) == queueBufferSize {
 		return ErrorSocketOverflood
 	}
+
+	fmt.Println("----- >>>", command)
 
 	c.out <- command
 
