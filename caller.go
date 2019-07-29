@@ -2,7 +2,6 @@ package gosocketio
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -77,7 +76,7 @@ func (c *caller) callFunc(h *Channel, args ...interface{}) []reflect.Value {
 	a := make([]reflect.Value, len(args)+1)
 	a[0] = reflect.ValueOf(h)
 	for i := range args {
-		fmt.Println(args[i])
+		// fmt.Println(args[i])
 		if args[i] != nil {
 			a[i+1] = reflect.ValueOf(args[i]).Elem()
 		} else {
@@ -88,7 +87,7 @@ func (c *caller) callFunc(h *Channel, args ...interface{}) []reflect.Value {
 	if !c.ArgsPresent {
 		a = a[0:1]
 	}
-	fmt.Println("Call Argument size", a, c.Func)
+	// fmt.Println("Call Argument size", a, c.Func)
 
 	return c.Func.Call(a)
 }
