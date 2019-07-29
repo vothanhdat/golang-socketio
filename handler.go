@@ -2,9 +2,11 @@ package gosocketio
 
 import (
 	"encoding/json"
-	"github.com/graarh/golang-socketio/protocol"
-	"sync"
+	"fmt"
 	"reflect"
+	"sync"
+
+	"github.com/graarh/golang-socketio/protocol"
 )
 
 const (
@@ -73,6 +75,7 @@ func (m *methods) callLoopEvent(c *Channel, event string) {
 
 	f, ok := m.findMethod(event)
 	if !ok {
+		fmt.Println("Method not found")
 		return
 	}
 
@@ -89,6 +92,7 @@ func (m *methods) processIncomingMessage(c *Channel, msg *protocol.Message) {
 	switch msg.Type {
 	case protocol.MessageTypeEmit:
 		f, ok := m.findMethod(msg.Method)
+		// fmt.Println("Method", msg.Method)
 		if !ok {
 			return
 		}
@@ -99,12 +103,14 @@ func (m *methods) processIncomingMessage(c *Channel, msg *protocol.Message) {
 		}
 
 		data := f.getArgs()
+		// fmt.Println(msg.Args)
+		// fmt.Println(data)
 		err := json.Unmarshal([]byte(msg.Args), &data)
 		if err != nil {
+			fmt.Println(err)
 			return
 		}
-
-		f.callFunc(c, data)
+		f.callFunc(c, data...)
 
 	case protocol.MessageTypeAckRequest:
 		f, ok := m.findMethod(msg.Method)
