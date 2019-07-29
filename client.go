@@ -1,7 +1,7 @@
 package gosocketio
 
 import (
-	"github.com/graarh/golang-socketio/transport"
+	"github.com/vothanhdat/golang-socketio/transport"
 	"strconv"
 )
 
